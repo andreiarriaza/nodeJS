@@ -46,6 +46,11 @@ Para agregar el contenido del archivo ".gitignore" se recomienda realizar lo sig
 3. Clic en el botón "Create".
 4. Se abre un sitio web con el código apropiado para ser agregado al archivo ".gitignore". Copiar dicho código.
 5. Pegar el código anterior dentro del archivo ".gitignore".
+6. Revisar lo que se agregó en la sección "Dependency directories", esto se hizo para que no agregue a GitHub
+   la carpeta "node_modules", sin importar en qué ubicación se encuentre.
+
+
+
 
 
 IMPORTANTE:
