@@ -321,6 +321,7 @@ Segunda validación: Para validar que se haya enviado la información que se edi
                          es enviada en el "body".
 
 Si ambas validaciones son exitosas, solo entonces, se ejecuta la función asíncrona (async) que está a continuación del parámetro "validatorHandler()".
+
 */
 router.put(
   '/:id',
