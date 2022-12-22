@@ -131,26 +131,20 @@ debido a que se sobreentiende que con solo agregar el nombre de la carpeta "rout
 el archivo "index.js" que contiene. */
 import routerApi from './routes/index.js';
 
+/* Se importan los Middleware de error que serán utilizados globalmente en la aplicación. */
+/*
+  IMPORTANTE: para que el Middleware funcione, es indispensable implementarlo despupés de la línea: routerApi(app)
+*/
+import {
+  logErrors,
+  errorHandler,
+  boomErrorHandler,
+} from './middlewares/errorHandler.js';
+
 const app = express();
 /* Puerto con el que se comunciará. Normalmente el puerto es el 3000, o, en su defecto, 3001, 3002, etc. */
 const port = 3000;
 
-/*
-Middleware
-
-El término middleware se refiere a un sistema de software que ofrece servicios y funciones comunes para las aplicaciones.
-En general, el middleware
-se encarga de las tareas de gestión de datos, servicios de aplicaciones, mensajería, autenticación y gestión de API.
-⠀⠀⠀
-Ayuda a los desarrolladores a diseñar aplicaciones con mayor eficiencia. Además, actúa como hilo conductor entre las aplicaciones,
-los datos y los usuarios.
-
-"express.json()" es un método incorporado en express para reconocer el objeto de solicitud entrante como objeto JSON. Este método se llama como middleware en su aplicación usando el código:
-              app.use(express.json());
-
-Este Middleware es INDISPENSABLE, para poder realizar el envío y recepción del método POST sin problemas.
-
-  */
 app.use(express.json());
 
 /* El siguiente comando crea una ruta.
@@ -193,6 +187,16 @@ app.listen(port, () => {
 });
 
 routerApi(app);
+
+/*
+  IMPORTANTE: para que el Middleware funcione, es indispensable implementarlo despupés de la línea: routerApi(app)
+*/
+
+/* Se implementan los Middlewares de error que fueron creados en el archivo "errorHandler.js", dentro de la carpeta "Middlewares".  */
+/* El orden en que se implementan los Middlewares es fundamental, pues en el mismo orden en el que se escriban, se ejecutarán. */
+app.use(logErrors);
+app.use(boomErrorHandler);
+app.use(errorHandler);
 
 /*
 Single Responsiblity Principle (Principio de Responsabilidad Única)

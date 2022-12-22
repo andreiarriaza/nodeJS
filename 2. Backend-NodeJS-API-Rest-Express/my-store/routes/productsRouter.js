@@ -27,23 +27,32 @@ Para instalarla y utilizarla se deben seguir los siguientes pasos:
 
             const randomName = faker.name.findName();
 */
-import { faker } from '@faker-js/faker';
 
 /* Se importa la clase "ProductsService", la cual corresponde a los servicios que han sido creados. */
 import ProductsService from '../services/productService.js';
+
+/* Se importa el Middleware de validación llamado: "validatorHandler.js". */
+import validatorHandler from '../middlewares/validatorHandler.js';
+
+/* Se importan los Schemas "createProductSchema, updateProductSchema y getProductSchema" creados en el archivo "productSchema.js" dentro de la carpeta "schemas". */
+import {
+  createProductSchema,
+  updateProductSchema,
+  getProductSchema,
+} from '../schemas/productSchema.js';
 
 const router = express.Router();
 
 /* Se crea una instancia del servicio. */
 const service = new ProductsService();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   /* También es posible enviar objetos JSON al servidor.
   En este caso, se envía un arreglo, el cual contiene
   diferentes objetos JSON. */
 
-  /* Se accede al método "find" de la instancia de servicio "service": */
-  const products = service.find();
+  /* Se accede al método "find" de la instancia de servicio llamada "service". */
+  const products = await service.find();
 
   /*
 
@@ -185,18 +194,39 @@ Se mostraría el siguiente objeto JSON:
 
     */
 
-router.get('/:id', (req, res) => {
-  /*
+/* El parámetro "next" corresponde a la función "next()", la cual se encargará, en el caso de haber un error,
+    de invocar los Middlewares de error ubicados en el archivo "errorHandler.js". */
+/* Después de la ruta (/:id) se invoca la validación de datos mediante la función "validatorHandler", dentro de la cual
+se envían dos parámetros:
+    - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "getProductSchema".
+    - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, el valor que se requiere es el
+                         valor del "id", el cual es enviado por medio de la URL como parámetro (params).
+
+Si la validación es exitosa, solo entonces, se ejecuta la función asíncrona (async) que está a continuación del parámetro "validatorHandler()".
+*/
+
+router.get(
+  '/:id',
+  validatorHandler(getProductSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      /*
   En este ejemplo, el comando "req.paramas.id" obtiene
   el valor del parámetro "id"(:id) que se está enviando
   mediante el "endpoint".
   */
-  /* Se utiliza la desestructuración para indicar
+      /* Se utiliza la desestructuración para indicar
     que de todos los parámetros, únicamente se desea obtener el parámetro llamdo "id". */
-  const { id } = req.params;
-  const product = service.findOne(id);
-  res.json(product);
-});
+      const { id } = req.params;
+      const product = await service.findOne(id);
+      res.json(product);
+    } catch (err) {
+      /* En caso de detectar un error, se ejecuta la función "next()", la cual se encarga de invocar
+    los middlewares de error que fueron creados en el archivo "errorHandler.js". */
+      next(err);
+    }
+  }
+);
 
 /* ****************************** Método POST ****************************** */
 
@@ -216,7 +246,7 @@ Los datos que serán enviados desde POSTMAN o INSOMNIA, deben tener el siguiente
 /*
 ¡¡¡¡¡¡¡¡¡¡IMPORTANTE!!!!!!!!!
 
- Para el funcionamiento del método POST, es necesario implementar un Middlware en el arhivo "MY-STORE/index.js".
+ Para el funcionamiento del método POST, es necesario implementar un Middleware en el arhivo "MY-STORE/index.js".
 
 
 Middleware
@@ -234,22 +264,36 @@ los datos y los usuarios.
 Este Middleware es INDISPENSABLE, para poder realizar el envío y recepción del método POST sin problemas.
 
   */
-router.post('/', (req, res) => {
-  /* La constante "body", almacenará toda la información que será enviada en formato JSON a la API. */
-  /* La propiedad "req" (request), hace referencia a la petición de datos que se realizará.  */
-  const body = req.body;
 
-  /* El método "json()" convierte un objeto JSON en un objeto JavaScript. A pesar de su nombre,
+/* Después de la ruta (/) se invoca la validación de datos mediante la función "validatorHandler", dentro de la cual
+se envían dos parámetros:
+    - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "createProductSchema".
+    - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, la información
+                         es enviada en el "body".
+
+Si la validación es exitosa, solo entonces, se ejecuta la función asíncrona (async) que está a continuación del parámetro "validatorHandler()".
+*/
+router.post(
+  '/',
+  validatorHandler(createProductSchema, 'body'),
+  async (req, res) => {
+    /* La constante "body", almacenará toda la información que será enviada en formato JSON a la API. */
+    /* La propiedad "req" (request), hace referencia a la petición de datos que se realizará.  */
+    const body = req.body;
+    /* Se accede al método "create" de la instancia de servicio llamada "service".  El estatus "200" indica que la petición
+  fue exitosa. */
+    const newProduct = await service.create(body);
+
+    /* El método "json()" convierte un objeto JSON en un objeto JavaScript. A pesar de su nombre,
   este método no convierte un objeto en JSON, sino que convierte un objeto JSON en objeto JavaScript. */
-  /*
+    /*
   El objeto "res" devolverá los siguientes atributos:
     message: mensaje que se mostrará.
     data: cuerpo (body) con los datos que serán enviados como respuesta. */
-  res.json({
-    message: 'Created',
-    data: body,
-  });
-});
+
+    res.status(200).json(newProduct);
+  }
+);
 
 /* ****************************** Método PUT ****************************** */
 /*
@@ -262,17 +306,36 @@ que el método apropiado en ese caso, sería el método "PATCH".
 
 */
 
-router.put('/:id', (req, res) => {
-  const body = req.body;
-  /* Se utiliza la destructuración para obtener el valor del parámetro "id" (:id) que fue
+/* Después de la ruta (/:id) se invocan, en esta ocasión 2 validaciones:
+
+Primera validación: Para validar el envío de un "id" que cumpla con el formato buscado, se invoca la función "validatorHandler", dentro de la cual
+                    se envían dos parámetros:
+                      - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "getProductSchema".
+                      - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, el valor que se requiere es el
+                           valor del "id", el cual es enviado por medio de la URL como parámetro (params).
+
+Segunda validación: Para validar que se haya enviado la información que se editará, se realiza la validación de datos mediante la función "validatorHandler",
+                    dentro de la cual se envían dos parámetros:
+                      - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "updateProductSchema".
+                      - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, la información
+                         es enviada en el "body".
+
+Si ambas validaciones son exitosas, solo entonces, se ejecuta la función asíncrona (async) que está a continuación del parámetro "validatorHandler()".
+*/
+router.put(
+  '/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
+  async (req, res) => {
+    const body = req.body;
+    /* Se utiliza la destructuración para obtener el valor del parámetro "id" (:id) que fue
   enviado mediante la URL. */
-  const { id } = req.params;
-  res.json({
-    message: 'updated',
-    data: body,
-    id,
-  });
-});
+    const { id } = req.params;
+    /* Se accede al método "update" de la instancia de servicio llamada "service". */
+    const product = await service.update(id, body);
+    res.json(product);
+  }
+);
 
 /* ****************************** Método PATCH ****************************** */
 /*
@@ -284,35 +347,83 @@ Aunque el método PATCH también podría ser usado para modificar TODOS los camp
 que el método apropiado en ese caso, sería el método "PUT".
 
 */
+/* El parámetro "next" corresponde a la función "next()", la cual se encargará, en el caso de haber un error,
+    de invocar los Middlewares de error ubicados en el archivo "errorHandler.js". */
 
-router.patch('/:id', (req, res) => {
-  const body = req.body;
-  /* Se utiliza la destructuración para obtener el valor del parámetro "id" (:id) que fue
+/* Después de la ruta (/:id) se invocan, en esta ocasión 2 validaciones:
+
+Primera validación: Para validar el envío de un "id" que cumpla con el formato buscado, se invoca la función "validatorHandler", dentro de la cual
+                    se envían dos parámetros:
+                      - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "getProductSchema".
+                      - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, el valor que se requiere es el
+                           valor del "id", el cual es enviado por medio de la URL como parámetro (params).
+
+Segunda validación: Para validar que se haya enviado la información que se editará, se realiza la validación de datos mediante la función "validatorHandler",
+                    dentro de la cual se envían dos parámetros:
+                      - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "updateProductSchema".
+                      - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, la información
+                         es enviada en el "body".
+
+Si ambas validaciones son exitosas, solo entonces, se ejecuta la función asíncrona (async) que está a continuación del parámetro "validatorHandler()".
+*/
+router.patch(
+  '/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const body = req.body;
+      /* Se utiliza la destructuración para obtener el valor del parámetro "id" (:id) que fue
   enviado mediante la URL. */
-  const { id } = req.params;
-  res.json({
-    message: 'updated',
-    data: body,
-    id,
-  });
-});
+      const { id } = req.params;
+      /* Se accede al método "update" de la instancia de servicio llamada "service".   */
+      const product = await service.update(id, body);
+      res.json(product);
+    } catch (err) {
+      /* En caso de detectar un error, se ejecuta la función "next()", la cual se encarga de invocar
+    los middlewares de error que fueron creados en el archivo "errorHandler.js". */
+      next(err);
+    }
+  }
+);
 
 /* ****************************** Método DELETE ****************************** */
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   /* Como se está eliminando un registro, no se envía ningún contenido dentro del elemento "Body". */
   // const body = req.body;
 
   /* Se utiliza la destructuración para obtener el valor del parámetro "id" (:id) que fue
   enviado mediante la URL. */
   const { id } = req.params;
-  res.json({
-    message: 'deleted',
-    /* Como se está eliminando un registro, no se envía ningún contenido dentro del elemento "Body". */
-    // data: body,
-    id,
-  });
+  /* Se accede al método "delete" de la instancia de servicio llamada "service". */
+  const confirmDelete = await service.delete(id);
+
+  res.json(confirmDelete);
 });
 
 /* Se exporta la constante "router" como un módulo. */
 export default router;
+
+/*
+
+Middlewares
+
+Estos se encuentran entre el "REQUEST" y el "RESPONSE". El middleware es un tipo de software que, como su propio nombre indica (middle significa “medio”) se coloca entre las diferentes aplicaciones y el sistema operativo que las tiene que ejecutar, con el objetivo de facilitar la comunicación de datos entre ellos. Se trata de un término que aparece por primera vez en el año 68 es una conferencia de la OTAN.
+
+El middleware se conoce también como “plumbing” (tuberías) porque conecta unas aplicaciones contras. También se puede comparar con un traductor que facilita que las distintas aplicaciones se comuniquen entre ellas y compartan datos.
+
+Un ejemplo de Middleware, sería el que valida que el usuario haya accedido a la API con las credenciales correctas,
+si es así, entonces se podría ejecutar otro Middleware que realice otro proceso en específico.
+
+Pueden ejecutarse varios Middlewares. Si hay varios, se ejecutarán secuencialmente.
+
+
+Algunas de sus funciones son:
+  - Funcionan omo Pipes (tuberías) Es decir, se pueden conectar unos con otros.
+  - Validar datos.
+  - Capturar errores.
+  - Validar permisos.
+  - Controlar accesos.
+
+*/
