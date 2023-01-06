@@ -355,9 +355,11 @@ que el método apropiado en ese caso, sería el método "PUT".
 
 Primera validación: Para validar el envío de un "id" que cumpla con el formato buscado, se invoca la función "validatorHandler", dentro de la cual
                     se envían dos parámetros:
-                      - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "getProductSchema".
-                      - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, el valor que se requiere es el
-                           valor del "id", el cual es enviado por medio de la URL como parámetro (params).
+                      - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este
+                        caso, el schema "getProductSchema".
+                      - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de
+                        referencia. En este caso, el valor que se requiere es el
+                        valor del "id", el cual es enviado por medio de la URL como parámetro (params).
 
 Segunda validación: Para validar que se haya enviado la información que se editará, se realiza la validación de datos mediante la función "validatorHandler",
                     dentro de la cual se envían dos parámetros:

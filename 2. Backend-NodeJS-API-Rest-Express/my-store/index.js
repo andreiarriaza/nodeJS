@@ -141,11 +141,94 @@ import {
   boomErrorHandler,
 } from './middlewares/errorHandler.js';
 
-const app = express();
-/* Puerto con el que se comunciará. Normalmente el puerto es el 3000, o, en su defecto, 3001, 3002, etc. */
-const port = 3000;
+/*
+Por seguridad, cuando se desea acceder a determinado recurso desde un dominio diferente al dominio en el que se encuentr alojado
+dicho recurso, dicha comunicación es bloqueada por el navegador por políticas de CORS.
 
+
+El Intercambio de Recursos de Origen Cruzado (CORS) es un mecanismo que utiliza cabeceras HTTP adicionales para permitir que un user agent (en-US) obtenga permiso para acceder a recursos seleccionados desde un servidor, en un origen distinto (dominio) al que pertenece. Un agente crea una petición HTTP de origen cruzado cuando solicita un recurso desde un dominio distinto, un protocolo o un puerto diferente al del documento que lo generó.
+
+
+Un ejemplo de solicitud de origen cruzado: el código JavaScript frontend de una aplicación web que es localizada en http://domain-a.com utiliza XMLHttpRequest para cargar el recurso http://api.domain-b.com/data.json.
+
+Por razones de seguridad, los exploradores restringen las solicitudes HTTP de origen cruzado iniciadas dentro de un script. Por ejemplo, XMLHttpRequest y la API Fetch siguen la política de mismo-origen. Ésto significa que una aplicación que utilice esas APIs XMLHttpRequest sólo puede hacer solicitudes HTTP a su propio dominio, a menos que se utilicen cabeceras CORS.
+
+
+Cuando se trabaja con API's lo más común es que se desee permitir el acceso a dicha API desde diferentes dominios, y no únicamente desde el dominio
+en el cual se encuentra almacenada, es por ello que es importante conocer cómo evitar errores por restricciones de CORS.
+
+Para evitar este problema, se utilizará la librería "CORS", la cual se instala de la siguiente manera:
+
+    npm i cors
+
+
+
+*/
+import cors from 'cors';
+
+const app = express();
+/* Se define el puerto con el que se comunciará. Normalmente el puerto es el 3000, o, en su defecto, 3001, 3002, etc.
+
+En este caso, se usa el operador de cortocircuito para verificar si se está enviando el Puerto al que
+debe conectarse la API dentro de la variable de entorno "PORT" (una variable de entorno
+  se obtiene mediante el comando "process.env.NOMBRE_VARIABLE_ENTORNO"). Si no se envía ningún valor en dicha variable,
+  la API se conectará de forma predeterminada al puerto "3000".
+*/
+const port = process.env.PORT || 3000;
+
+/* Implementación del framework "Express". */
 app.use(express.json());
+
+/* Por medio del método "use()" se habilita el Intercambio de Recursos de Origen Cruzado (CORS), lo cual permitirá
+que sea posible conectarse a la API desde cualquier dominio y no únicamente desde el dominio en el que se encuentra almacenada la API:
+    app.use(cors());
+
+Lo anterior funciona perfectamente para las API's públicas, sin embargo, cuando se está trabajando con una API privada, es
+indispensable elegir únicamente los dominios (orígenes) específicos con los cuales se desea permitir establecer la comunicación.
+
+Suponiendo que se tiene una API privada, los pasos para permitir CORS solamente de ciertos orígenes específicos, serían los siguientes:
+  1. Crear un arreglo con la "Lista Blanca" de los orígenes permitidos:
+        const whitelist = ["https://localhost:8080", "https://myapp.com"];
+*/
+
+/*
+Para API's públicas: (permite el acceso desde cualquier origen (dominio))
+  app.use(cors());
+*/
+
+/*
+Para API's privadas: (permite el acceso únicamente de los dominios indicados)
+*/
+
+const whitelist = ['https://localhost:8080', 'https://myapp.com'];
+const options = {
+  origin: (origin, callback) => {
+    /* El "if" verificará si se cumple por lo menos una de las siguientes condiciones:
+          1. Por medio del método "includes()" se verifica si el "origin" (origen) está en la "whitelist".
+          2. O bien, se comprobará si el parámetro "origin" no es Verdadero, es decir, si es Falso (dicho parámetro será falso, cuando éste se encuentre vacío).
+             Esto se hace para que se pueda acceder a la API desde el mismo origen.
+
+
+    Si dicho origen sí existe en la "whitelist", se ejecutará un "callback()".
+
+    Dentro de dicho callbak se indica que no hubo ningún error (parámetro "null"), y que el acceso a la API está
+    permitido (parámetro "true").
+
+    */
+    if (whitelist.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      /*
+      Si se comprueba que el "origin" (origen) no está incluido en la "whitelist",
+      se ejecuta nuevamente un "callback", pero esta vez
+      se devuelve un error con el mensaje "Acceso no permitido"
+      */
+      callback(new Error('Acceso no permitido.'));
+    }
+  },
+};
+/* Configuración de las opciones de CORS, dentro de las cuales se incluyen los dominios (orígenes) permitidos para comunicarse con la API. */
+app.use(cors(options));
 
 /* El siguiente comando crea una ruta.
 La ruta es "/".

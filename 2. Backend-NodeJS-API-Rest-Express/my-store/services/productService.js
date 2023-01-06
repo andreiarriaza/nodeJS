@@ -1,5 +1,6 @@
 /* ******************************************** CREACIÓN DE SERVICIOS ******************************************** */
 
+/* En los servicios está toda la lógica de negocio y resuelve los casos de uso. */
 /*
 
 Faker JS
