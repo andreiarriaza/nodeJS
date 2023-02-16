@@ -1,6 +1,7 @@
 /* ******************************************** CREACIÓN DE SERVICIOS ******************************************** */
 
 /* En los servicios está toda la lógica de negocio y resuelve los casos de uso. */
+
 /*
 
 Faker JS
@@ -27,12 +28,13 @@ Para instalarla y utilizarla se deben seguir los siguientes pasos:
     3. Importar la librería dentro del proyecto:
             import { faker } from '@faker-js/faker';
 
+        Ejemplo de cómo obtener el atributo nombre de dicha API:
             const randomName = faker.name.findName();
 */
 import { faker } from '@faker-js/faker';
 
 /*
-
+Paquete "boom":
 El paquete "boom" permite administrar errores de la API.
 
 Para instalarlo, se debe escribir lo siguiente en consola:
@@ -45,16 +47,19 @@ class ProductsService {
   constructor() {
     // Se inicializa un array en memoria.
     this.products = [];
+    /* Se invoca el método "generate" que se crea a continuación. */
     this.generate();
   }
 
   generate() {
+    /* Se mostrarán 100 productos como máximo */
     const limit = 100;
     for (let index = 0; index < limit; index++) {
       /*
 
     La librería Fake JS devuelve, entre otros, los siguientes valores:
 
+      - id único: faker.datatype.uuid()  (genera un id único)
       - nombre de producto: faker.commerce.productName()
       - Precio del producto (cadena de texto): faker.commerce.price()
       - URL de la imagen del producto: faker.image.imageUrl()
@@ -67,14 +72,18 @@ class ProductsService {
 
       Al castearlo, se indica que el valor anterior se convertirá a un número entero de base "10"
       */
+
       /* Se envía al arreglo "products" un objeto mediante el método PUSH.  */
       this.products.push({
-        /* El método "uuid()" permite obtener un string largo que se genera de forma aleatoria, el cual
+        /* El método "uuid()" permite obtener un string largo ÚNICO que se genera de forma aleatoria, el cual
         se convertirá en el "id". */
+
         id: faker.datatype.uuid(),
+
         name: faker.commerce.productName(),
         price: parseInt(faker.commerce.price(), 10),
         image: faker.image.imageUrl(),
+
         /* La propiedad "isBlock" almacenará datos booleanos generados por la librería "faker" de forma aleatoria.
 
         Para que "faker" genere dichos datos se utiliza la propiedad "faker.datatype.boolean".
@@ -86,16 +95,20 @@ class ProductsService {
       });
     }
   }
+
+  /* Se realiza una petición "asíncrona". */
   async create(data) {
     const newProduct = {
-      /* El método "uuid()" permite obtener un string largo que se genera de forma aleatoria, el cual
-        se convertirá en el "id". */
+      /* El método "uuid()" permite obtener un string ÚNICO largo que se genera de forma aleatoria, el cual
+        se convertirá en el "id". Se indica que la API "f" */
       id: faker.datatype.uuid(),
-      /* Se utiliza el Spread Operator (...) para concatenar junto con el id, lo que se encuentre dentro del parámetro "data". */
+      /* Se utiliza el Spread Operator (...) para concatenar junto con el id, lo que se encuentre dentro del parámetro "data",
+      el cual es recibido por el método "create(data)".  */
       ...data,
     };
     /* Se envía, mediante el método "push", los datos del nuevo producto al arreglo "products". */
     this.products.push(newProduct);
+    /* Se retorna los datos del nuevo producto agregado.  */
     return newProduct;
   }
 
@@ -109,12 +122,17 @@ class ProductsService {
     });
   }
 
+  /* Petición asíncrona para buscar un producto determinado a partir de su "id". */
+
   async findOne(id) {
+    // Para comprobar la generación del error de los Middlewares de errores.
     //  Si se quisiera comprobar el funcionamiento de los middlewares para errores, se puede agregar la línea que está a continuación.
     // const name = this.getTotal();
 
     /* Se comprueba si algún valor del atributo "id" de cada producto(item), coincide con el "id" que fue enviado
-    como parámetro a la función "findOne()". La función "find" buscará el "id" que coincida dentro del arreglo "products" y lo devolverá. */
+    como parámetro a la función "findOne()". La función "find" buscará el "id" que coincida dentro del arreglo "products" y lo devolverá, en caso
+    sea encontrado. Si el "id" es encontrado, la constante "product" será VERDADERA. Pero si el "id" no es encontrado, la constante "product"
+    tendrá el valor "FALSE". */
     const product = this.products.find((item) => item.id === id);
 
     if (!product) {
@@ -131,6 +149,7 @@ class ProductsService {
     return product;
   }
 
+  /* La función "update()" es invocada desde el archivo "productsRouter.js". */
   async update(id, changes) {
     /* Se comprueba si algún valor del atributo "id" de cada producto(item), coincide con el "id" que fue enviado
     como parámetro a la función "update()". La función "update" buscará el "id" que coincida dentro del arreglo "products" y devolverá el número
@@ -149,7 +168,9 @@ class ProductsService {
       this.products[index] = {
         /* Se utiliza el Spread Operator para concategnar lo que ya existe dentro de la variable "product",
            con lo que se encuentra almacenado en el parámetro "changes". De esta forma, para ese elemento específico
-           del arreglo "products", únicamente se reemplazarán los valores que se hayan indicado dentro del parámetro "changes".  */
+           del arreglo "products", NO SE REEMPLAZARÁN TODOS LOS VALORES de dicho producto, sino
+           únicamente se reemplazarán los valores que se hayan indicado dentro del parámetro "changes", es decir, solamente
+           se reemplazarán los valores que fueron modificados.  */
         ...product,
         ...changes,
       };
@@ -161,7 +182,7 @@ class ProductsService {
 
   async delete(id) {
     /* Se comprueba si algún valor del atributo "id" de cada producto(item), coincide con el "id" que fue enviado
-    como parámetro a la función "update()". La función "update" buscará el "id" que coincida dentro del arreglo "products" y devolverá el número
+    como parámetro a la función "delete()". La función "delete" buscará el "id" que coincida dentro del arreglo "products" y devolverá el número
     de índice (la posición) que ocupa dicho elemento dentro del arreglo. Esto se consigue mediante el método "findIndex()", el cual devuelve
     el índice o posición que corresponde a determinado elemento. " */
     const index = this.products.findIndex((item) => item.id === id);
@@ -179,6 +200,7 @@ class ProductsService {
 
     */
     this.products.splice(index, 1);
+    /* Se retorna el "id" que fue eliminado (en dado caso, dicho "id" sí se haya encontrado".*/
     return {
       id,
     };

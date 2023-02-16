@@ -1,32 +1,4 @@
 import express from 'express';
-/*
-
-Faker JS
-Es una librería (dependencia) que genera
-datos falsos para pruebas y desarrollo.
-
-Su sitio web es: https://fakerjs.dev/
-
-Para instalarla y utilizarla se deben seguir los siguientes pasos:
-
-    1. Instalar la dependencia de "Faker js":
-            npm install @faker-js/faker --save-dev
-
-    2. Antes de realizar la importación del paso
-       siguiente, es indispensable abrir el archivo
-       de configuración de ESLint llamadio ".eslintrc.json"
-       y agregar en la sección de "parserOptions"
-       la siguiente propiedad con el valor indicado:
-
-            "sourceType": "module"
-
-       Esto es necesario para que la aplicación permita utilizar el comando "import", que se utilizará a continuación.
-
-    3. Importar la librería dentro del proyecto:
-            import { faker } from '@faker-js/faker';
-
-            const randomName = faker.name.findName();
-*/
 
 /* Se importa la clase "ProductsService", la cual corresponde a los servicios que han sido creados. */
 import ProductsService from '../services/productService.js';
@@ -51,7 +23,8 @@ router.get('/', async (req, res) => {
   En este caso, se envía un arreglo, el cual contiene
   diferentes objetos JSON. */
 
-  /* Se accede al método "find" de la instancia de servicio llamada "service". */
+  /* Se accede al método "find" de la instancia de servicio llamada "service", es decir, se acede al método "find()" del
+  archivo de servicio llamado "productService.js". Con esto, se obtienenen los productos, los cuales se almacenan dentro de la constante "products".  */
   const products = await service.find();
 
   /*
@@ -81,15 +54,6 @@ La mayoría de veces se utilizan para filtrar determinados registros, para que s
   Si el parámetro query llamado "size" fue enviado, es decir, si existe, será almacenado en la variable "limit".
   De lo contrario, si dicho parámetro no fue enviado, en la variable "limit" se almacenará el valor "10".
   */
-
-  /*
-Para comprobar si la ruta que se creará a continuación funciona, se puede hacer lo siguiente:
-
-  1. Ruta:
-       localhost:3000/products
-
-      Al escribir dicha ruta, como no se está enviando el parám,etro "query", el cual es opcional, la cantidad de productos que se mostrarán será "10".
-*/
 
   res.json(products);
 });
@@ -157,16 +121,20 @@ Dicha ruta debe ser creada antes del endpoint dinámico, por ejemplo, la ruta:
 
 
 Precisamente por ello es que el ejemplo 1, se encuentra antes del ejemplo 2.
+
 Siguiendo este orden, cuando se escriba la ruta:
     /productsa/filter
 
-NO SERÁ RECONOCIDA la palabra "filter" como un "id", sino que será interpretada como una ruta específica; es decir,
-que mostrará el texto:
+NO SERÁ RECONOCIDA la palabra "filter" como un "id", sino que será interpretada como una ruta específica; es decir, que mostrará el texto:
    "Yo soy un filter".
 
 */
 
-/* Ahora la ruta cuenta con */
+/* Ruta "filter" con "endpoint" específico. */
+/*
+Para testear esta ruta, se debe hacer una petición por método GET al siguiente endpoint:
+    localhost:3000/api/v1/products/filter
+*/
 router.get('/filter', (req, res) => {
   res.send('Yo soy un filter.');
 });
@@ -194,8 +162,6 @@ Se mostraría el siguiente objeto JSON:
 
     */
 
-/* El parámetro "next" corresponde a la función "next()", la cual se encargará, en el caso de haber un error,
-    de invocar los Middlewares de error ubicados en el archivo "errorHandler.js". */
 /* Después de la ruta (/:id) se invoca la validación de datos mediante la función "validatorHandler", dentro de la cual
 se envían dos parámetros:
     - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "getProductSchema".
@@ -205,13 +171,16 @@ se envían dos parámetros:
 Si la validación es exitosa, solo entonces, se ejecuta la función asíncrona (async) que está a continuación del parámetro "validatorHandler()".
 */
 
+/* El parámetro "next" corresponde a la función "next()", la cual se encargará, en el caso de haber un error,
+    de invocar los Middlewares de error ubicados en el archivo "errorHandler.js". */
+
 router.get(
   '/:id',
   validatorHandler(getProductSchema, 'params'),
   async (req, res, next) => {
     try {
       /*
-  En este ejemplo, el comando "req.paramas.id" obtiene
+  En este ejemplo, el comando "req.params.id" obtiene
   el valor del parámetro "id"(:id) que se está enviando
   mediante el "endpoint".
   */
@@ -277,11 +246,12 @@ router.post(
   '/',
   validatorHandler(createProductSchema, 'body'),
   async (req, res) => {
-    /* La constante "body", almacenará toda la información que será enviada en formato JSON a la API. */
+    /* La constante "body", almacenará toda la información que será enviada en formato JSON a la API por medio del método POST desde POSTMAN. */
     /* La propiedad "req" (request), hace referencia a la petición de datos que se realizará.  */
     const body = req.body;
-    /* Se accede al método "create" de la instancia de servicio llamada "service".  El estatus "200" indica que la petición
-  fue exitosa. */
+    /* Se accede al método "create" de la instancia de servicio llamada "service", es decir,
+    se accede al método "create()" del archivo de servicio "productService.js", el cual devolverá los datos del nuevo producto
+    que se desea agregar. El estatus "200" indica que la petición fue exitosa. */
     const newProduct = await service.create(body);
 
     /* El método "json()" convierte un objeto JSON en un objeto JavaScript. A pesar de su nombre,
@@ -312,13 +282,13 @@ Primera validación: Para validar el envío de un "id" que cumpla con el formato
                     se envían dos parámetros:
                       - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "getProductSchema".
                       - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, el valor que se requiere es el
-                           valor del "id", el cual es enviado por medio de la URL como parámetro (params).
+                           valor del "id", el cual es enviado por medio de la URL por medio del parámetro (params).
 
 Segunda validación: Para validar que se haya enviado la información que se editará, se realiza la validación de datos mediante la función "validatorHandler",
                     dentro de la cual se envían dos parámetros:
                       - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "updateProductSchema".
                       - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, la información
-                         es enviada en el "body".
+                         es enviada en el "body" desde POSTMAN desde el FrontEnd.
 
 Si ambas validaciones son exitosas, solo entonces, se ejecuta la función asíncrona (async) que está a continuación del parámetro "validatorHandler()".
 
@@ -332,7 +302,8 @@ router.put(
     /* Se utiliza la destructuración para obtener el valor del parámetro "id" (:id) que fue
   enviado mediante la URL. */
     const { id } = req.params;
-    /* Se accede al método "update" de la instancia de servicio llamada "service". */
+    /* Se accede al método "update" de la instancia de servicio llamada "service", es decir, se invoca el método "update" del archivo
+    de servicio llamado "productService.js". */
     const product = await service.update(id, body);
     res.json(product);
   }
@@ -348,8 +319,6 @@ Aunque el método PATCH también podría ser usado para modificar TODOS los camp
 que el método apropiado en ese caso, sería el método "PUT".
 
 */
-/* El parámetro "next" corresponde a la función "next()", la cual se encargará, en el caso de haber un error,
-    de invocar los Middlewares de error ubicados en el archivo "errorHandler.js". */
 
 /* Después de la ruta (/:id) se invocan, en esta ocasión 2 validaciones:
 
@@ -365,10 +334,13 @@ Segunda validación: Para validar que se haya enviado la información que se edi
                     dentro de la cual se envían dos parámetros:
                       - Primer parámetro: en este, se especifica qué tipo de Schema se quiere validar, en este caso, el schema "updateProductSchema".
                       - Segundo parámetro: se indica de dónde vendrá la información que se utilizará de referencia. En este caso, la información
-                         es enviada en el "body".
+                         es enviada en el "body" desde POSTMAN o desde el FronEnd.
 
 Si ambas validaciones son exitosas, solo entonces, se ejecuta la función asíncrona (async) que está a continuación del parámetro "validatorHandler()".
 */
+
+/* El parámetro "next" corresponde a la función "next()", la cual se encargará, en el caso de haber un error,
+    de invocar los Middlewares de error ubicados en el archivo "errorHandler.js". */
 router.patch(
   '/:id',
   validatorHandler(getProductSchema, 'params'),

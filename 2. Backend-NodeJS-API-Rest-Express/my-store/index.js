@@ -1,4 +1,59 @@
 /*
+IMPORTANTE: para probar esta API es necesario tomar en cuenta los siguientes comandos:
+
+EJECUTAR NODEMON:
+  Para probar la aplicación en el entorno de Desarrollo, se utiliza NODEMON para que dicha aplicación detecte
+  cualquier cambio en tiempo real, y lo actualice en el navegador.
+
+      npm run dev
+
+  Este comando entonces, ejecuta nodemon y va a escuchar a todos los archivos JavaScript y actualizar la aplicación en tiempo real, al detectar
+  algún cambio en ella.
+
+
+PROBAR LA APLICACIÓN EN PRODUCCIÓN:
+  Para probar la aplicación en Producción, es necesario ejecutar el comando:
+
+      npm run start
+
+
+¡¡¡ATENCIÓN!!!!
+Es imprescindible que al ejecutar los comandos anteriores, se encuentre abierta en Visual Code la carpeta dentro de la cual
+se encuentra el archivo "index.js". En este caso, dicha carpeta se llama "MY-STORE".
+
+Si esto no fuera así, al ejecutar, los comandos anteriores, se desplegará un error como el siguiente:
+
+        npm ERR! code ENOENT
+        npm ERR! syscall open
+        npm ERR! path C:\Users\Taller\Documents\GitHub\nodeJS\2. Backend-NodeJS-API-Rest-Express/package.json
+        npm ERR! errno -4058
+        npm ERR! enoent ENOENT: no such file or directory, open 'C:\Users\Taller\Documents\GitHub\nodeJS\2. Backend-NodeJS-API-Rest-Express\package.json'
+        npm ERR! enoent This is related to npm not being able to find a file.
+        npm ERR! enoent
+
+        npm ERR! A complete log of this run can be found in:
+        npm ERR!     C:\Users\Taller\AppData\Local\npm-cache\_logs\2023-02-16T14_32_51_711Z-debug-0.log
+
+        asistente@DESKTOP-G74TPFV MINGW64 ~/Documents/GitHub/nodeJS/2. Backend-NodeJS-API-Rest-Express (main)
+        $ npm run start
+        npm ERR! code ENOENT
+        npm ERR! syscall open
+        npm ERR! path C:\Users\Taller\Documents\GitHub\nodeJS\2. Backend-NodeJS-API-Rest-Express/package.json
+        npm ERR! errno -4058
+        npm ERR! enoent ENOENT: no such file or directory, open 'C:\Users\Taller\Documents\GitHub\nodeJS\2. Backend-NodeJS-API-Rest-Express\package.json'
+        npm ERR! enoent This is related to npm not being able to find a file.
+        npm ERR! enoent
+
+        npm ERR! A complete log of this run can be found in:
+        npm ERR!     C:\Users\Taller\AppData\Local\npm-cache\_logs\2023-02-16T14_33_54_397Z-debug-0.log
+
+
+
+*/
+
+/*
+
+PASOS PARA COMENZAR:
 
     1. Se crea una configuración por defecto para los nuevos paquetes "npm" que se instalarán:
         npm init -y
@@ -9,27 +64,35 @@
             "link": "eslint"               (verifica que se estén aplicando las buenas prácticas)
 
     3. Instalar las siguientes dependencias de desarrollo (paquetes):
-        a. nodemon: crea el entorno de desarrollo y crea un servidor y ejecuta la actualización de la aplicación en tiempo real, al detectar algún cambio en ella.
-        b. eslint eslint-config-prettier eslint-plugin-prettier prettier: estas dependencias se encargan del "linter", es decir,
-           de verificar las buenas prácticas de programación (ESLint) y dar formato adecuado al código (prettier).
-        c. -D: Indica que son dependencias de forma de "desarrollo" y NO para "producción".
+        a. nodemon: crea el entorno de desarrollo y crea un servidor y ejecuta la actualización de la aplicación en tiempo real,
+                    al detectar algún cambio en ella.
+        b. ESLint: es un linter para JavaScript. Un Linter no es más que una herramienta que nos ayuda a cumplir
+                   las buenas prácticas de codificación y de estilos en un lenguaje de programación
+        c. Prettier: es una herramienta que se usa para dar formato a tu código, siendo una de las mejores
+                     opciones cuando quieres obtener un estilo de programación consistente tanto en el caso de
+                     que trabajes con un equipo como en el caso de que trabajes solo en un proyecto.
 
-        Comando a escribir para instalar estas dependencias:
+        Todas las dependencias de desarrollo anteriores, se instalan mediante el siguiente comando:
+
             npm install nodemon eslint eslint-config-prettier eslint-plugin-prettier prettier -D
 
+          La letra "-D" indica que las que se instalarán son dependencias de forma de "DESARROLLO" y NO para "PRODUCCIÓN".
 
 
-Para probar la aplicación en el entorno de Desarrollo:
-    npm run dev
+EJECUTAR NODEMON:
+  Para probar la aplicación en el entorno de Desarrollo, se utiliza NODEMON para que dicha aplicación detecte
+  cualquier cambio en tiempo real, y lo actualice en el navegador.
 
-    Se ejecuta nodemon y va a escuchar a todos los archivos JavaScript y actualizar la aplicación en tiempo real, al detectar
-    algún cambio en ella.
+      npm run dev
+
+  Este comando entonces, ejecuta nodemon y va a escuchar a todos los archivos JavaScript y actualizar la aplicación en tiempo real, al detectar
+  algún cambio en ella.
 
 
+PROBAR LA APLICACIÓN EN PRODUCCIÓN:
+  Para probar la aplicación en Producción, es necesario ejecutar el comando:
 
-Para probar la aplicación en Producción:
-
-    npm run start
+      npm run start
 
 
 
@@ -55,20 +118,17 @@ Para agregar el contenido del archivo ".gitignore" se recomienda realizar lo sig
 
 IMPORTANTE:
 1. El archivo ".editorconfig" se crea para que todos los desarrolladores tengan la misma configuración en el editor de código.
-2. El archivo ".eslintrc.json" permite configurar el proyecto, para seguir las buenas prácticas. En este caso,
-   dentro de dicho archivo se especifica lo siguiente:
-    a. Se trabajará con ECMAScript 6 (es6)
-    b. Se utilizarán las extensiones "ESLint" y "Prettier".
+2. El archivo ".eslintrc.json" permite configurar el proyecto, para seguir las buenas prácticas.
+   En este caso, dentro de dicho archivo se especifica lo siguiente:
+      a. Se trabajará con ECMAScript 6 (es6)
+      b. Se utilizarán las extensiones "ESLint" y "Prettier".
 
-        ESLint: es un linter para JavaScript. Un Linter no es más que una herramienta que nos ayuda a cumplir
-                las buenas prácticas de codificación y de estilos en un lenguaje de programación
+          ESLint: es un linter para JavaScript. Un Linter no es más que una herramienta que nos ayuda a cumplir
+                  las buenas prácticas de codificación y de estilos en un lenguaje de programación
 
-        Prettier: es una herramienta que se usa para dar formato a tu código, siendo una de las mejores
-                  opciones cuando quieres obtener un estilo de programación consistente tanto en el caso de
-                  que trabajes con un equipo como en el caso de que trabajes solo en un proyecto.
-
-
-
+          Prettier: es una herramienta que se usa para dar formato a tu código, siendo una de las mejores
+                    opciones cuando quieres obtener un estilo de programación consistente tanto en el caso de
+                    que trabajes con un equipo como en el caso de que trabajes solo en un proyecto.
 */
 
 /*
@@ -76,8 +136,9 @@ Express JS:
     Es el framework backend más popular para Node.js, y es una parte extensa del ecosistema JavaScript.
     Está diseñado para construir aplicaciones web de una sola página, multipágina e híbridas, también se ha convertido en el estándar para desarrollar aplicaciones backend con Node.js.
 
-Para instalarlo:
-    npm install express
+INSTALAR EXPRESS JS:
+  Para instalarlo, se debe escribir el siguiente comando:
+      npm install express
 
 Express NO ES una dependencia de desarrollo (devDependencies), sino una dependencia de producción (dependencies)
 
@@ -87,11 +148,11 @@ Express NO ES una dependencia de desarrollo (devDependencies), sino una dependen
  Antes de hacer uso del comando "import" o "export", es indispensable
  realizar lo siguiente:
 
-    1. Abrir el archivo de configuración de ESLint (el cual es el eslinter para manejar buenas prácticas) llamadio ".eslintrc.json"
+    1. Abrir el archivo de configuración de ESLint (el cual es el eslinter para manejar buenas prácticas) llamado ".eslintrc.json"
        y agregar en la sección de "parserOptions" la siguiente propiedad con el valor indicado para que no sea reconocido como un error:
             "sourceType": "module"
 
-    2. Abrir el archivo "package.json" y agregar ls siguiente propiedad, con su respectivo valor:
+    2. Abrir el archivo "package.json" y agregar la siguiente propiedad, con su respectivo valor:
           "type": "module"
 
         La línea anterior se debe agregar después de la propiedad "main", es decir, quedaría así el archivo "package.json":
@@ -124,7 +185,10 @@ Express NO ES una dependencia de desarrollo (devDependencies), sino una dependen
             }
 
 */
+
+/* Se importa "Express JS" */
 import express from 'express';
+
 /* Se importa la función "routerApi" que se encuentra dentro del archivo "index.js", el cual se encuentra
 dentro de la carpeta "routes". No  hace falta agregar explícitamente el nombre del archivo "index.js",
 debido a que se sobreentiende que con solo agregar el nombre de la carpeta "routes", lo que se quiere importar es
@@ -156,6 +220,9 @@ Por razones de seguridad, los exploradores restringen las solicitudes HTTP de or
 
 Cuando se trabaja con API's lo más común es que se desee permitir el acceso a dicha API desde diferentes dominios, y no únicamente desde el dominio
 en el cual se encuentra almacenada, es por ello que es importante conocer cómo evitar errores por restricciones de CORS.
+
+
+INSTALAR CORS:
 
 Para evitar este problema, se utilizará la librería "CORS", la cual se instala de la siguiente manera:
 
@@ -189,6 +256,13 @@ indispensable elegir únicamente los dominios (orígenes) específicos con los c
 Suponiendo que se tiene una API privada, los pasos para permitir CORS solamente de ciertos orígenes específicos, serían los siguientes:
   1. Crear un arreglo con la "Lista Blanca" de los orígenes permitidos:
         const whitelist = ["https://localhost:8080", "https://myapp.com"];
+
+      En este caso, como la API es privada, solamente se permitirán CORS si los orígenes son los siguientes:
+          - https://localhost:8080    (localhost)
+          - https://myapp.com          (¡Dirección ficticia! Usada para ejemplificar que aquí podría definirse la URL de otro orígen,
+                                       en el cual también se permitirán los CORS.  !)
+
+  IMPORTANTE: se recalca que la dirección "https://myapp.com" es FICTICIA.
 */
 
 /*
@@ -277,6 +351,9 @@ routerApi(app);
 
 /* Se implementan los Middlewares de error que fueron creados en el archivo "errorHandler.js", dentro de la carpeta "Middlewares".  */
 /* El orden en que se implementan los Middlewares es fundamental, pues en el mismo orden en el que se escriban, se ejecutarán. */
+/*
+IMPORTANTE: los Middlewares de tipo error se deben crear después de definir el "Routing", de lo contrario se generará un error.
+*/
 app.use(logErrors);
 app.use(boomErrorHandler);
 app.use(errorHandler);

@@ -1,6 +1,6 @@
 # Este archivo de configuración es recomendable crearlo para que todos los desarrolladores
 # del equipo cuenten con la misma configuración en el editor de código.
-# Para que este archivo funcione, es necesario tener instalada la extensión "EditorConfig for VS Code"
+# IMPORTANTE: para que este archivo funcione, es necesario tener instalada la extensión "EditorConfig for VS Code"
 
 
 # Editor configuration, see https://editorconfig.org
