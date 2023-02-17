@@ -1,4 +1,4 @@
-# CUrso de Backend con Node JS: API REST con Express JS
+# Curso de Backend con Node JS: API REST con Express JS
 
 Esta es la cuarta parte de un grupo de cursos Platzi que están relacionados. 
 
