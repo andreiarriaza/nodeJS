@@ -190,8 +190,8 @@ Express NO ES una dependencia de desarrollo (devDependencies), sino una dependen
 import express from 'express';
 
 /* Se importa la función "routerApi" que se encuentra dentro del archivo "index.js", el cual se encuentra
-dentro de la carpeta "routes". No  hace falta agregar explícitamente el nombre del archivo "index.js",
-debido a que se sobreentiende que con solo agregar el nombre de la carpeta "routes", lo que se quiere importar es
+dentro de la carpeta "routes". No hace falta agregar explícitamente el nombre del archivo "index.js" (aunque, en este caso, se agregó
+por decisión propia), debido a que se sobreentiende que con solo agregar el nombre de la carpeta "routes", lo que se quiere importar es
 el archivo "index.js" que contiene. */
 import routerApi from './routes/index.js';
 
@@ -233,13 +233,14 @@ Para evitar este problema, se utilizará la librería "CORS", la cual se instala
 */
 import cors from 'cors';
 
+/* Se asigna el método "express()" a la constante "app". */
 const app = express();
 /* Se define el puerto con el que se comunciará. Normalmente el puerto es el 3000, o, en su defecto, 3001, 3002, etc.
 
 En este caso, se usa el operador de cortocircuito para verificar si se está enviando el Puerto al que
 debe conectarse la API dentro de la variable de entorno "PORT" (una variable de entorno
-  se obtiene mediante el comando "process.env.NOMBRE_VARIABLE_ENTORNO"). Si no se envía ningún valor en dicha variable,
-  la API se conectará de forma predeterminada al puerto "3000".
+se obtiene mediante el comando "process.env.NOMBRE_VARIABLE_ENTORNO"). Si no se envía ningún valor en dicha variable,
+la API se conectará de forma predeterminada al puerto "3000".
 */
 const port = process.env.PORT || 3000;
 

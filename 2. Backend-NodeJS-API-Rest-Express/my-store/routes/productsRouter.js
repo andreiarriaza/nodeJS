@@ -18,6 +18,18 @@ const router = express.Router();
 /* Se crea una instancia del servicio. */
 const service = new ProductsService();
 
+/* Se debe recordar que el archivo "productsRouter.js" se invoca en el archivo "routes/index.js",
+mediante la siguiente línea de código:
+        router.use('/products', productsRouter);
+
+Tomando en cuenta lo anterior, cuando en el presente archivo (productsRouter.js) se crea
+el método "router.get('/'...) que está a continuación, la diagonal sirve
+para indicar que ese método se ejecutará cuando se acceda a la ruta raíz (/) del archivo "productsRouter.js" mediante el método GET.
+
+Dicha ruta raíz equivale al endpoint:
+     localhost:3000/api/v1/products
+
+*/
 router.get('/', async (req, res) => {
   /* También es posible enviar objetos JSON al servidor.
   En este caso, se envía un arreglo, el cual contiene

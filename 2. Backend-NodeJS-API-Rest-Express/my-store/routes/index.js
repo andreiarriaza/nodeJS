@@ -31,10 +31,16 @@ function routerApi(app) {
   const router = express.Router();
   app.use('/api/v1', router);
 
-  /* Se define la ruta que será asignada a la constante "productsRouter", la cual hace referencia al módulo "router" que se exportó
+  /* Se define la ruta que será asignada a "productsRouter", el cual hace referencia al módulo "router" que se exportó
   desde el archivo "productsRouter.js". */
   router.use('/products', productsRouter);
+
+  /* Se define la ruta que será asignada a "usersRouter", el cual hace referencia al módulo "router" que se exportó
+  desde el archivo "usersRouter.js". */
   router.use('/users', usersRouter);
+
+  /* Se define la ruta que será asignada a "categoriesRouter", el cual hace referencia al módulo "router" que se exportó
+  desde el archivo "categoriresRouter.js". */
   router.use('/categories', categoriesRouter);
 }
 

@@ -40,6 +40,19 @@ son Parámetros Query y, por lo tanto, son opcionales. */
         }
 
 */
+
+/* Se debe recordar que el archivo "usersRouter.js" se invoca en el archivo "routes/index.js",
+mediante la siguiente línea de código:
+        router.use('/users', usersRouter);
+
+Tomando en cuenta lo anterior, cuando en el presente archivo (usersRouter.js) se crea
+el método "router.get('/'...) que está a continuación, la diagonal sirve
+para indicar que ese método se ejecutará cuando se acceda a la ruta raíz (/) del archivo "usersRouter.js" mediante el método GET.
+
+Dicha ruta raíz equivale al endpoint:
+     localhost:3000/api/v1/users
+
+*/
 router.get('/', (req, res) => {
   /* Los parámetros "limit" y "offset" son los
     utilizados para poder controlar la paginación de un sitio Web.
@@ -53,6 +66,15 @@ router.get('/', (req, res) => {
   para confirmar si fueron o no enviados. */
   /* Se comprueba si los parámetros "limit" y "offset" son "verdaderos", es decir, verifica si existen. */
   if (limit && offset) {
+    /* Si los parámetros "limit" y "offset" existen, simplemente se devolverá una respuesta "res" con los valores
+    de dichos parámetros:
+          {
+              "limit": "10",
+              "offset": "200"
+          }
+    */
+    /* El método "json()" convierte un objeto JSON en un objeto JavaScript. A pesar de su nombre,
+  este método no convierte un objeto en JSON, sino que convierte un objeto JSON en objeto JavaScript. */
     res.json({
       limit,
       offset,
